@@ -2,28 +2,18 @@
 
 set -e
 
-# Set region
 REGION="us-central1"
 gcloud config set compute/region "$REGION"
 
-# Enable Cloud Functions API
-echo "🔧 Enabling Cloud Functions API..."
 gcloud services enable cloudfunctions.googleapis.com
 
-# Download the Go sample code
-echo "📦 Downloading sample code..."
 curl -LO https://github.com/GoogleCloudPlatform/golang-samples/archive/main.zip
-
-# Automatically answer 'yes' to file replacement prompts
-yes | unzip -q main.zip
+unzip -q main.zip
 cd golang-samples-main/functions/codelabs/gopher
 
-# Display directory tree (optional)
-echo "📁 Project structure:"
-# tree  # Commented out to avoid command not found error
+echo "Project structure:"
+tree
 
-# Create HelloWorld Function
-echo "🚀 Deploying HelloWorld function..."
 cat > hello.go <<EOF
 package gopher
 import (
@@ -42,8 +32,6 @@ gcloud functions deploy HelloWorld \
   --region "$REGION" \
   --allow-unauthenticated
 
-# Create Gopher Function
-echo "🎨 Deploying Gopher function..."
 cat > gopher.go <<EOF
 package gopher
 import (
@@ -66,7 +54,6 @@ func Gopher(w http.ResponseWriter, r *http.Request) {
 }
 EOF
 
-# Gopher image (download directly)
 curl -o gophercolor.png https://raw.githubusercontent.com/GoogleCloudPlatform/golang-samples/main/functions/codelabs/gopher/gophercolor.png
 
 gcloud functions deploy Gopher \
@@ -76,8 +63,6 @@ gcloud functions deploy Gopher \
   --region "$REGION" \
   --allow-unauthenticated
 
-# Write and run test
-echo "🧪 Running tests..."
 cat > gopher_test.go <<EOF
 package gopher
 import (
@@ -98,4 +83,4 @@ EOF
 go mod init gopher
 go test -v
 
-echo "✅ Lab completed successfully!"
+echo "Lab completed successfully!"

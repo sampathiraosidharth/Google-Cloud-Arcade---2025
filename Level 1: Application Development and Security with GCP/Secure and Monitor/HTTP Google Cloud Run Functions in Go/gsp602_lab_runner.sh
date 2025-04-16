@@ -18,7 +18,7 @@ cd golang-samples-main/functions/codelabs/gopher
 
 # Display directory tree (optional)
 echo "📁 Project structure:"
-tree
+# tree  # Commented out to avoid command not found error
 
 # Create HelloWorld Function
 echo "🚀 Deploying HelloWorld function..."

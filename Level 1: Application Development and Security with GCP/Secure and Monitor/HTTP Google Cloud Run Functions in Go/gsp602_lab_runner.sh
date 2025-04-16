@@ -16,9 +16,6 @@ yes A | unzip main.zip
 # Navigate to the proper directory
 cd golang-samples-main/functions/codelabs/gopher
 
-echo "Project structure:"
-tree
-
 cat > hello.go <<EOF
 package gopher
 import (

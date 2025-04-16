@@ -13,7 +13,9 @@ gcloud services enable cloudfunctions.googleapis.com
 # Download the Go sample code
 echo "📦 Downloading sample code..."
 curl -LO https://github.com/GoogleCloudPlatform/golang-samples/archive/main.zip
-unzip -q main.zip
+
+# Automatically answer 'yes' to file replacement prompts
+yes | unzip -q main.zip
 cd golang-samples-main/functions/codelabs/gopher
 
 # Display directory tree (optional)

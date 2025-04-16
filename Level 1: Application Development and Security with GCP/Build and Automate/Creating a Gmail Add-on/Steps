@@ -1,0 +1,113 @@
+
+# Creating a Gmail Add-on
+
+## Quick tip: Review the prerequisites before you run the lab
+### Lab duration: 45 minutes
+### Difficulty: Introductory
+### Cost: No cost
+
+---
+
+## Overview
+
+Gmail add-ons automate tasks within Gmail, saving time and effort for users. Gmail add-ons can examine incoming messages and act on them in various ways, such as:
+
+- Displaying additional information for the user in the Gmail UI.
+- Connecting to non-Google services to retrieve information or take other actions.
+- Providing an interactive interface to allow the user to control the add-on or send information to another service.
+
+In this lab, you will create a Gmail Add-on that allows you to quickly change the labels of an email thread.
+
+---
+
+## Setup and Requirements
+
+Before you click the Start Lab button:
+- Read these instructions. Labs are timed and you cannot pause them.
+- The timer, which starts when you click Start Lab, shows how long lab resources are available to you.
+
+This hands-on lab lets you perform activities in a real cloud environment using new, temporary credentials that will be provided for the duration of the lab.
+
+### Requirements:
+- Access to a standard internet browser (Chrome browser recommended).
+- Time to complete the lab.
+
+**Note:** Use an Incognito or private browser window to avoid conflicts between your personal and student accounts.
+
+---
+
+## How to Start Your Lab and Sign in to Gmail
+
+1. **Click Start Lab**.
+2. The Lab Details pane appears with the temporary credentials you will use to sign into Gmail.
+3. Copy the **Username** and paste it into the Sign-in dialog.
+4. Copy the **Password** and paste it into the Welcome dialog.
+5. If needed, click **I understand** to accept the terms.
+6. Gmail opens. Click **Get started** and close any further information windows.
+
+You are now in Gmail, looking at your Inbox.
+
+---
+
+## Task 1: Create the Script Project
+
+1. **Launch Apps Script**:
+   - Click this [Apps Script link](#) to open in a new tab or browser window.
+   - A new project will open.
+   - Click the **Settings** icon, then select **Show "appsscript.json" manifest file in editor**.
+
+2. **Name the Project**:
+   - Click **Untitled project** in the upper-left.
+   - Name the project **Gmail Add-on Quickstart** and click **Rename**.
+
+3. **Create the Script File (Code.gs)**:
+   - Replace the content of the **Code.gs** file with the script you will add.
+
+---
+
+## Task 2: Update the Script Manifest
+
+1. In the script editor, select the **appsscript.json** file from the left menu.
+2. Replace the content of the manifest file with the script you will add.
+3. Click **Save** to save the manifest and **Code.gs** changes.
+
+---
+
+## Task 3: Deploy the Add-on
+
+1. Click the **Deploy** > **Test deployments** button at the top.
+2. For **Application(s): Gmail**, click **Install**.
+3. Click **Done**.
+
+---
+
+## Task 4: Run the Add-on
+
+1. Return to Gmail and refresh the tab.
+2. Choose an email and open it.
+3. Make sure the right side menu is open.
+4. Create labels:
+   - Click the **Labels** button in the Gmail menu.
+   - Click **Create new** and enter **Test 1** as the label name.
+   - Repeat to create another label **Test 2**.
+5. **Authorize the add-on** by clicking the **Authorize access** link, selecting the student account, and clicking **Allow**.
+
+---
+
+## Task 5: Use the Add-on
+
+1. In the Gmail add-on menu, select/deselect **Test 1** and **Test 2** labels.
+2. Verify the labels are applied to the email thread.
+3. Return to the inbox and refresh the browser to see the changes.
+
+---
+
+## Congratulations!
+
+You have successfully created a Gmail Add-on that allows you to quickly apply labels to email threads. You can now explore more features or build on this knowledge to integrate more Gmail functionalities in your add-ons.
+
+---
+
+**Next Steps:**
+- Explore more about Gmail Add-ons and their capabilities.
+- Learn more at the [Google Workspace Learning Center](https://developers.google.com/gmail/add-ons).

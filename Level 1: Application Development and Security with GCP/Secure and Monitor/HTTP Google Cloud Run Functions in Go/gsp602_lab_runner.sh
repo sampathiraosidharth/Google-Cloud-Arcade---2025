@@ -1,88 +1,67 @@
 #!/bin/bash
 
-set -e
+# Set Region and Zone from project metadata
+export REGION=$(gcloud compute project-info describe \
+--format="value(commonInstanceMetadata.items[google-compute-default-region])")
 
-REGION="us-central1"
-gcloud config set compute/region "$REGION"
+export ZONE=$(gcloud compute project-info describe \
+--format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+
+# Get Project ID
+PROJECT_ID=$(gcloud config get-value project)
+
+# Check if REGION and ZONE are set properly
+if [ -z "$REGION" ] || [ -z "$ZONE" ]; then
+  echo "Region or Zone could not be fetched from project metadata. Please check your gcloud configuration."
+  exit 1
+fi
+
+# Enable Cloud services
+gcloud services enable run.googleapis.com
+if [ $? -ne 0 ]; then
+  echo "Failed to enable Cloud Run API."
+  exit 1
+fi
 
 gcloud services enable cloudfunctions.googleapis.com
+if [ $? -ne 0 ]; then
+  echo "Failed to enable Cloud Functions API."
+  exit 1
+fi
 
-# Download and extract with auto-yes to all prompts
+# Download the Go sample code
 curl -LO https://github.com/GoogleCloudPlatform/golang-samples/archive/main.zip
-# Use -o flag to automatically overwrite files without prompting
-unzip -o -q main.zip
-cd golang-samples-main/functions/codelabs/gopher
+if [ $? -ne 0 ]; then
+  echo "Failed to download the Go samples."
+  exit 1
+fi
 
-echo "Project structure:"
-tree
+# Unzip the downloaded file
+if ! command -v unzip &> /dev/null; then
+  echo "Unzip command not found. Please install unzip and try again."
+  exit 1
+fi
 
-cat > hello.go <<EOF
-package gopher
-import (
-    "fmt"
-    "net/http"
-)
-func HelloWorld(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintln(w, "Hello, world.")
-}
-EOF
+unzip main.zip
+if [ $? -ne 0 ]; then
+  echo "Failed to unzip the downloaded file."
+  exit 1
+fi
 
-gcloud functions deploy HelloWorld \
-  --gen2 \
-  --runtime go121 \
-  --trigger-http \
-  --region "$REGION" \
-  --allow-unauthenticated
+# Navigate to the functions directory
+cd golang-samples-main/functions/codelabs/gopher || { echo "Directory not found."; exit 1; }
 
-cat > gopher.go <<EOF
-package gopher
-import (
-    "fmt"
-    "io"
-    "net/http"
-    "os"
-)
-func Gopher(w http.ResponseWriter, r *http.Request) {
-    f, err := os.Open("gophercolor.png")
-    if err != nil {
-        http.Error(w, fmt.Sprintf("Error reading file: %v", err), http.StatusInternalServerError)
-        return
-    }
-    defer f.Close()
-    w.Header().Add("Content-Type", "image/png")
-    if _, err := io.Copy(w, f); err != nil {
-        http.Error(w, fmt.Sprintf("Error writing response: %v", err), http.StatusInternalServerError)
-    }
-}
-EOF
+# Deploy the functions
+gcloud functions deploy HelloWorld --gen2 --runtime go121 --trigger-http --region "$REGION" --quiet
+if [ $? -ne 0 ]; then
+  echo "Failed to deploy HelloWorld function."
+  exit 1
+fi
 
-curl -o gophercolor.png https://raw.githubusercontent.com/GoogleCloudPlatform/golang-samples/main/functions/codelabs/gopher/gophercolor.png
+gcloud functions deploy Gopher --gen2 --runtime go121 --trigger-http --region "$REGION" --quiet
+if [ $? -ne 0 ]; then
+  echo "Failed to deploy Gopher function."
+  exit 1
+fi
 
-gcloud functions deploy Gopher \
-  --gen2 \
-  --runtime go121 \
-  --trigger-http \
-  --region "$REGION" \
-  --allow-unauthenticated
-
-cat > gopher_test.go <<EOF
-package gopher
-import (
-    "net/http"
-    "net/http/httptest"
-    "testing"
-)
-func TestGopher(t *testing.T) {
-    rr := httptest.NewRecorder()
-    req := httptest.NewRequest("GET", "/", nil)
-    Gopher(rr, req)
-    if rr.Result().StatusCode != http.StatusOK {
-        t.Errorf("Gopher StatusCode = %v, want %v", rr.Result().StatusCode, http.StatusOK)
-    }
-}
-EOF
-
-go mod init gopher
-go test -v
-
-echo "Lab completed successfully!"
+echo "Functions deployed successfully."

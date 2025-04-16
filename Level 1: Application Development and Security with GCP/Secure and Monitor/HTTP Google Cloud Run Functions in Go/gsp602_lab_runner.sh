@@ -7,10 +7,13 @@ gcloud config set compute/region "$REGION"
 
 gcloud services enable cloudfunctions.googleapis.com
 
-# Download and extract with auto-yes to all prompts
+# Download the zip file
 curl -LO https://github.com/GoogleCloudPlatform/golang-samples/archive/main.zip
-# Use -o flag to automatically overwrite files without prompting
-unzip -o -q main.zip
+
+# Use 'yes' command to automatically answer 'A' to all prompts
+yes A | unzip main.zip
+
+# Navigate to the proper directory
 cd golang-samples-main/functions/codelabs/gopher
 
 echo "Project structure:"

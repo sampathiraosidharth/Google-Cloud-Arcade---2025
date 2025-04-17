@@ -1,66 +1,78 @@
 #!/bin/bash
 
-# Detect and set region and zone for the project
-echo "Detecting region and zone..."
+# Exit immediately if a command fails
+set -e
 
-REGION=$(gcloud compute project-info describe \
-  --format="value(commonInstanceMetadata.items[google-compute-default-region])")
-ZONE=$(gcloud compute project-info describe \
-  --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+# Fetch the region and zone for the project
+export REGION=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-region])")
+export ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 
-# Fallback to defaults if not found
-if [ -z "$REGION" ]; then
-  REGION="us-east1"
-  echo "Region not found. Using default: $REGION"
-fi
+# Get project ID
+PROJECT_ID=`gcloud config get-value project`
 
-if [ -z "$ZONE" ]; then
-  ZONE="us-east1-b"
-  echo "Zone not found. Using default: $ZONE"
-fi
+echo "Using Project: $PROJECT_ID"
+echo "Region: $REGION, Zone: $ZONE"
 
-# Set configuration for gcloud
-gcloud config set compute/region $REGION
-gcloud config set compute/zone $ZONE
+# Enable required APIs
+echo "Enabling Cloud Functions and Cloud Run APIs..."
+gcloud services enable cloudfunctions.googleapis.com run.googleapis.com
 
-# Get the active project ID
-PROJECT_ID=$(gcloud config get-value project)
-echo "Active project: $PROJECT_ID"
+# Clean up any previous files (if they exist)
+echo "Cleaning up previous files..."
+rm -rf golang-samples-main main.zip
 
-# Enable required services
-echo "Enabling required Cloud APIs..."
-gcloud services enable run.googleapis.com
-gcloud services enable cloudfunctions.googleapis.com
-
-# Download and extract the sample Go functions
-echo "Downloading sample Go functions..."
+# Download the Go samples
+echo "Downloading Go samples..."
 curl -LO https://github.com/GoogleCloudPlatform/golang-samples/archive/main.zip
 
-echo "Extracting files..."
-unzip -q main.zip || yes A | unzip -q main.zip
+# Extract the Go samples
+echo "Extracting Go samples..."
+unzip -q main.zip || { yes A | unzip -q main.zip; }
 
-# Navigate to the appropriate directory
+# Navigate to the Go function directory
 cd golang-samples-main/functions/codelabs/gopher
-echo "Current working directory: $(pwd)"
+echo "Working directory: $(pwd)"
 
-# Deploy HelloWorld Cloud Function
-echo "Deploying 'HelloWorld' Cloud Function..."
+# Deploy the HelloWorld function (Gen 2, HTTP triggered)
+echo "Deploying HelloWorld function..."
 gcloud functions deploy HelloWorld \
   --gen2 \
   --runtime go121 \
   --trigger-http \
   --region $REGION \
-  --allow-unauthenticated \
-  --quiet
+  --allow-unauthenticated
 
-# Deploy Gopher Cloud Function
-echo "Deploying 'Gopher' Cloud Function..."
+# Get the function URL
+echo "Getting HelloWorld function URL..."
+FUNCTION_URL=$(gcloud functions describe HelloWorld --gen2 --region $REGION --format="value(serviceConfig.uri)")
+
+# Check if the function URL was retrieved successfully
+if [ -n "$FUNCTION_URL" ]; then
+  echo "Successfully deployed HelloWorld function at $FUNCTION_URL"
+  # Test the HelloWorld function
+  echo "Testing HelloWorld function..."
+  curl -s "$FUNCTION_URL"
+  echo ""
+else
+  echo "Error: Could not retrieve the function URL. Please check for any issues."
+  exit 1
+fi
+
+# Deploy Gopher function (Gen 2, HTTP triggered)
+echo "Deploying Gopher function..."
 gcloud functions deploy Gopher \
   --gen2 \
   --runtime go121 \
   --trigger-http \
   --region $REGION \
-  --allow-unauthenticated \
-  --quiet
+  --allow-unauthenticated
 
-echo "Deployment completed successfully."
+echo "Deployment completed successfully!"
+echo "Functions deployed: HelloWorld and Gopher"
+
+# Clean up temporary files
+cd ..
+rm -rf golang-samples-main main.zip
+
+echo "Clean-up complete."
+

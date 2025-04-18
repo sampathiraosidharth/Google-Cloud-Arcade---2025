@@ -2,7 +2,7 @@
 
 ## 🚀 Analyze Text Sentiment with Google's Natural Language API — Step-by-Step!
 
-### 📽️ Solution Video 👉 [Coming Soon – Stay Tuned!](#)
+### 📽️ Solution Video 👉 [GSP126 Lab Guide](https://youtu.be/XxI2pmAwGLY)
 
 ---
 

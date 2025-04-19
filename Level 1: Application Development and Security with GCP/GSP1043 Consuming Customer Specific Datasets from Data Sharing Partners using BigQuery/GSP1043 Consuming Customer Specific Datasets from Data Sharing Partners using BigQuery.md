@@ -19,7 +19,7 @@ This step configures the environment for the data sharing partner who will contr
 Run these commands in the Data Sharing Partner Project console:
 
 ```bash
-curl -LO https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Consuming%20Customer%20Specific%20Datasets%20from%20Data%20Sharing%20Partners%20using%20BigQuery/gsp1043-1.sh
+curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP1043%20Consuming%20Customer%20Specific%20Datasets%20from%20Data%20Sharing%20Partners%20using%20BigQuery/Setup.sh
 
 sudo chmod +x *.sh
 
@@ -31,7 +31,7 @@ Now let's set up the project that publishes the actual datasets to be shared.
 Run these commands in the Data Publisher Project console:
 
 ```bash
-curl -LO https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Consuming%20Customer%20Specific%20Datasets%20from%20Data%20Sharing%20Partners%20using%20BigQuery/gsp1043-2.sh
+curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP1043%20Consuming%20Customer%20Specific%20Datasets%20from%20Data%20Sharing%20Partners%20using%20BigQuery/Customer%20Project.sh
 
 sudo chmod +x *.sh
 
@@ -43,7 +43,7 @@ Finally, configure the consumer project that will access the shared data.
 Run these commands in the Customer (Data Twin) Project console:
 
 ```bash
-curl -LO https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Consuming%20Customer%20Specific%20Datasets%20from%20Data%20Sharing%20Partners%20using%20BigQuery/gsp1043-3.sh
+curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP1043%20Consuming%20Customer%20Specific%20Datasets%20from%20Data%20Sharing%20Partners%20using%20BigQuery/Configure.sh
 
 sudo chmod +x *.sh
 

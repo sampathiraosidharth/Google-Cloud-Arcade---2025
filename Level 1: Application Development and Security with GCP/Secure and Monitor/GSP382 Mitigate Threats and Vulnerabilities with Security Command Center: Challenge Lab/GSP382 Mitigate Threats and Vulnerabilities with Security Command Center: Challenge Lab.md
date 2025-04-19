@@ -10,7 +10,7 @@
 ### Run the following Commands in CloudShell
 
 ```
-curl -LO https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Mitigate%20Threats%20and%20Vulnerabilities%20with%20Security%20Command%20Center%20Challenge%20Lab/gsp382-1.sh
+curl -LO https://github.com/sampathiraosidharth/Google-Cloud-Arcade---2025/raw/refs/heads/main/Level%201:%20Application%20Development%20and%20Security%20with%20GCP/Secure%20and%20Monitor/GSP382%20Mitigate%20Threats%20and%20Vulnerabilities%20with%20Security%20Command%20Center:%20Challenge%20Lab/GSP382-1.sh
 sudo chmod +x *.sh
 ./*.sh
 ```
@@ -20,7 +20,7 @@ sudo chmod +x *.sh
 ### Run again the following Commands in CloudShell
 
 ```
-curl -LO https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Mitigate%20Threats%20and%20Vulnerabilities%20with%20Security%20Command%20Center%20Challenge%20Lab/gsp382-2.sh
+curl -LO https://github.com/sampathiraosidharth/Google-Cloud-Arcade---2025/raw/refs/heads/main/Level%201:%20Application%20Development%20and%20Security%20with%20GCP/Secure%20and%20Monitor/GSP382%20Mitigate%20Threats%20and%20Vulnerabilities%20with%20Security%20Command%20Center:%20Challenge%20Lab/GSP382-2.sh
 sudo chmod +x *.sh
 ./*.sh
 ```

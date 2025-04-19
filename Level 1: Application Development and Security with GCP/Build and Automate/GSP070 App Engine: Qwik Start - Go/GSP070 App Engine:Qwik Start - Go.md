@@ -8,10 +8,8 @@
 
 ## 🛠️ One-Click Lab Setup — Run These in Cloud Shell
 ```bash
-curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP1043%20Consuming%20Customer%20Specific%20Datasets%20from%20Data%20Sharing%20Partners%20using%20BigQuery/Configure.sh
-
+curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP070%20App%20Engine%3A%20Qwik%20Start%20-%20Go/GSP070.sh
 sudo chmod +x *.sh
-
 ./*.sh
 ```
 ---

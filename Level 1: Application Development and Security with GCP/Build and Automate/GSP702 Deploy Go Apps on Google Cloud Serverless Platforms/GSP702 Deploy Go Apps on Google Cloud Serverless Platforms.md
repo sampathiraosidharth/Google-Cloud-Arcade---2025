@@ -1,14 +1,14 @@
-# 🚀 GSP1183 Gating Deployments with Binary Authorization | [GSP1183 Lab Guide](https://www.cloudskillsboost.google/games/6064/labs/38618)
+# 🚀 GSP702 Deploy Go Apps on Google Cloud Serverless Platforms | [GSP702 Lab Guide](https://www.cloudskillsboost.google/games/6064/labs/38619)
 
 
-### 📽️ Solution Video 👉 [GSP602 Lab Guide]()
+### 📽️ Solution Video 👉 [GSP702 Lab Guide]()
 
 ---
 
 ## 🛠️ One-Click Lab Setup — Run These in Cloud Shell
 
 ```bash
-curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP1183%20Gating%20Deployments%20with%20Binary%20Authorization/1183.sh
+curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP1183%20Gating%20Deployments%20with%20Binary%20Authorization/702.sh
 sudo chmod +x *.sh
 ./*.sh
 ```

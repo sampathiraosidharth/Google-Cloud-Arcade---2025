@@ -1,17 +1,30 @@
-# 🚀 GSP1183 Gating Deployments with Binary Authorization | [GSP1183 Lab Guide](https://www.cloudskillsboost.google/games/6064/labs/38618)
+# 🚀 GSP382 Mitigate Threats and Vulnerabilities with Security Command Center: Challenge Lab| [GSP382 Lab Guide](https://www.cloudskillsboost.google/games/6064/labs/38623)
 
 
-### 📽️ Solution Video 👉 [GSP602 Lab Guide]()
+### 📽️ Solution Video 👉 [GSP382 Lab Guide]()
 
 ---
 
 ## 🛠️ One-Click Lab Setup — Run These in Cloud Shell
 
-```bash
-curl -LO https://raw.githubusercontent.com/sampathiraosidharth/Google-Cloud-Arcade---2025/refs/heads/main/Level%201%3A%20Application%20Development%20and%20Security%20with%20GCP/Build%20and%20Automate/GSP1183%20Gating%20Deployments%20with%20Binary%20Authorization/1183.sh
+### Run the following Commands in CloudShell
+
+```
+curl -LO https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Mitigate%20Threats%20and%20Vulnerabilities%20with%20Security%20Command%20Center%20Challenge%20Lab/gsp382-1.sh
 sudo chmod +x *.sh
 ./*.sh
 ```
+
+* **Reserve Static External IP** address name **static-ip**
+
+### Run again the following Commands in CloudShell
+
+```
+curl -LO https://raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/refs/heads/main/Mitigate%20Threats%20and%20Vulnerabilities%20with%20Security%20Command%20Center%20Challenge%20Lab/gsp382-2.sh
+sudo chmod +x *.sh
+./*.sh
+```
+
 ---
 
 # 🎯 Mission Accomplished!

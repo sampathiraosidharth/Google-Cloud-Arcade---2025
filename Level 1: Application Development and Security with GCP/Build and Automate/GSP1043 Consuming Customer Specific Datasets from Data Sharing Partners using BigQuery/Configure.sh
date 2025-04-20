@@ -1,51 +1,65 @@
 #!/bin/bash
 
-# Starting Execution
 echo "Starting Execution"
+echo
+echo "Getting Project ID"
+echo
 
-# Create muting configurations for VPC Flow Logs, Audit Logs, and Admin Service Accounts
-gcloud scc muteconfigs create muting-flow-log-findings \
-  --project=$DEVSHELL_PROJECT_ID \
-  --location=global \
-  --description="Rule for muting VPC Flow Logs" \
-  --filter="category=\"FLOW_LOGS_DISABLED\"" \
-  --type=STATIC
+# Step 3: Prompting for Project ID
+get_project_id() {
+  read -p "Please enter PROJECT_ID: " PROJECT_ID
+  export PROJECT_ID="$PROJECT_ID"
+}
 
-gcloud scc muteconfigs create muting-audit-logging-findings \
-  --project=$DEVSHELL_PROJECT_ID \
-  --location=global \
-  --description="Rule for muting audit logs" \
-  --filter="category=\"AUDIT_LOGGING_DISABLED\"" \
-  --type=STATIC
+# Call the function
+get_project_id
 
-gcloud scc muteconfigs create muting-admin-sa-findings \
-  --project=$DEVSHELL_PROJECT_ID \
-  --location=global \
-  --description="Rule for muting admin service account findings" \
-  --filter="category=\"ADMIN_SERVICE_ACCOUNT\"" \
-  --type=STATIC
+echo
+echo "Creating View in customer_dataset"
 
-echo "Check Score for task 2 then press Y"
+bq mk \
+--use_legacy_sql=false \
+--view "SELECT cities.zip_code, cities.city, cities.state_code, customers.last_name, customers.first_name
+FROM \`${DEVSHELL_PROJECT_ID}.customer_dataset.customer_info\` as customers
+JOIN \`${PROJECT_ID}.data_publisher_dataset.authorized_view\` as cities
+ON cities.state_code = customers.state" \
+${DEVSHELL_PROJECT_ID}:customer_dataset.customer_table
 
-# Delete the existing rule and create a new rule with updated source IP range
-gcloud compute firewall-rules delete default-allow-rdp
-gcloud compute firewall-rules create default-allow-rdp \
-  --source-ranges=35.235.240.0/20 \
-  --allow=tcp:3389 \
-  --description="Allow HTTP traffic from 35.235.240.0/20" \
-  --priority=65534
+echo
 
-# Delete the existing rule and create a new rule with updated source IP range
-gcloud compute firewall-rules delete default-allow-ssh --quiet
-gcloud compute firewall-rules create default-allow-ssh \
-  --source-ranges=35.235.240.0/20 \
-  --allow=tcp:22 \
-  --description="Allow HTTP traffic from 35.235.240.0/20" \
-  --priority=65534
+# Function to display a random congratulatory message
+random_congrats() {
+    MESSAGES=(
+        "Congratulations for completing the lab!"
+        "Well done! Your hard work has paid off!"
+        "Amazing job! Lab completed successfully!"
+        "Outstanding! You did great!"
+        "Great work! One step closer to mastery!"
+        "Fantastic effort! Achievement unlocked!"
+    )
 
-# Get the default zone
-export ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+    RANDOM_INDEX=$((RANDOM % ${#MESSAGES[@]}))
+    echo "${MESSAGES[$RANDOM_INDEX]}"
+}
 
-echo "Click here: https://console.cloud.google.com/compute/instancesEdit/zones/$ZONE/instances/cls-vm?project=$DEVSHELL_PROJECT_ID"
+# Display a random congratulatory message
+random_congrats
 
-echo "NOW FOLLOW VIDEO'S INSTRUCTIONS"
+echo
+
+# Navigate to home
+cd
+
+# Function to remove files with specific prefixes
+remove_files() {
+    for file in *; do
+        if [[ "$file" == gsp* || "$file" == arc* || "$file" == shell* ]]; then
+            if [[ -f "$file" ]]; then
+                rm "$file"
+                echo "File removed: $file"
+            fi
+        fi
+    done
+}
+
+remove_files

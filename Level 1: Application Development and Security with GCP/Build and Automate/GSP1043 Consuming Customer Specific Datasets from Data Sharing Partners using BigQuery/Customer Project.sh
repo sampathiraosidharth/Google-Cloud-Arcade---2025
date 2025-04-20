@@ -1,114 +1,72 @@
 #!/bin/bash
 
-#----------------------------------------------------start--------------------------------------------------#
+clear
 
 echo "Starting Execution"
 
-# Step 1: Get Compute Zone & Region
-echo "Fetching Compute Zone & Region..."
-export ZONE=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+# Step 1: Getting Project ID & User ID
+echo "Getting Project ID & User ID"
+echo
+get_value() {
+  read -p "Please enter PROJECT_ID: " PROJECT_ID
+  echo
+  read -p "Please enter TWIN_USER: " TWIN_USER
 
-export REGION=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-region])")
-
-# Step 2: Get IAM Policy and Save to JSON
-echo "Retrieving IAM Policy..."
-gcloud projects get-iam-policy $(gcloud config get-value project) \
-    --format=json > policy.json
-
-# Step 3: Update IAM Policy
-echo "Updating IAM Policy..."
-jq '{
-  "auditConfigs": [
-    {
-      "service": "cloudresourcemanager.googleapis.com",
-      "auditLogConfigs": [
-        {
-          "logType": "ADMIN_READ"
-        }
-      ]
-    }
-  ]
-} + .' policy.json > updated_policy.json
-
-# Step 4: Set Updated IAM Policy
-echo "Applying Updated IAM Policy..."
-gcloud projects set-iam-policy $(gcloud config get-value project) updated_policy.json
-
-# Step 5: Enable Security Center API
-echo "Enabling Security Center API..."
-gcloud services enable securitycenter.googleapis.com --project=$DEVSHELL_PROJECT_ID
-
-# Step 6: Wait for 20 seconds
-echo "Waiting for API to be enabled..."
-sleep 20
-
-# Step 7: Add IAM Binding for BigQuery Admin
-echo "Granting BigQuery Admin Role..."
-gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
---member=user:demouser1@gmail.com --role=roles/bigquery.admin
-
-# Step 8: Remove IAM Binding for BigQuery Admin
-echo "Revoking BigQuery Admin Role..."
-gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID \
---member=user:demouser1@gmail.com --role=roles/bigquery.admin
-
-# Step 9: Add IAM Binding for IAM Admin
-echo "Granting IAM Admin Role..."
-gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
-  --member=user:$USER_EMAIL \
-  --role=roles/cloudresourcemanager.projectIamAdmin 2>/dev/null
-
-# Step 10: Create Compute Instance
-echo "Creating Compute Instance..."
-gcloud compute instances create instance-1 \
---zone=$ZONE \
---machine-type=e2-medium \
---network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
---metadata=enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD \
---scopes=https://www.googleapis.com/auth/cloud-platform --create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/debian-cloud/global/images/debian-11-bullseye-v20230912,mode=rw,size=10,type=projects/$DEVSHELL_PROJECT_ID/zones/$ZONE/diskTypes/pd-balanced
-
-# Step 11: Create DNS Policy
-echo "Creating DNS Policy..."
-gcloud dns --project=$DEVSHELL_PROJECT_ID policies create dns-test-policy --description="quickgcplab" --networks="default" --private-alternative-name-servers="" --no-enable-inbound-forwarding --enable-logging
-
-# Step 12: Wait for 30 seconds
-echo "Waiting for DNS Policy to take effect..."
-sleep 30
-
-# Step 13: SSH into Compute Instance and Execute Commands
-echo "Connecting to Compute Instance..."
-gcloud compute ssh instance-1 --zone=$ZONE --tunnel-through-iap --project "$DEVSHELL_PROJECT_ID" --quiet --command "gcloud projects get-iam-policy \$(gcloud config get project) && curl etd-malware-trigger.goog"
-
-# Function to prompt user to check their progress
-function check_progress {
-    while true; do
-        echo
-        echo -n "Have you checked your progress for Task 1 & Task 2? (Y/N): "
-        read -r user_input
-        if [[ "$user_input" == "Y" || "$user_input" == "y" ]]; then
-            echo
-            echo "Great! Proceeding to the next steps..."
-            echo
-            break
-        elif [[ "$user_input" == "N" || "$user_input" == "n" ]]; then
-            echo
-            echo "Please check your progress for Task 1 & Task 2 and then press Y to continue."
-        else
-            echo
-            echo "Invalid input. Please enter Y or N."
-        fi
-    done
+  export PROJECT_ID="$PROJECT_ID"
+  export TWIN_USER="$TWIN_USER"
 }
 
-# Call function to check progress before proceeding
-check_progress
+# Call the function
+get_value
+echo
 
-# Step 14: Delete Compute Instance
-echo "Deleting Compute Instance..."
-gcloud compute instances delete instance-1 --zone=$ZONE --quiet
+# Step 2: Create Authorized View in Data Publisher Dataset
+echo "Creating Authorized View in Data Publisher Dataset"
+bq mk \
+--use_legacy_sql=false \
+--view "SELECT * FROM \`${PROJECT_ID}.demo_dataset.authorized_table\` WHERE state_code = 'NY' LIMIT 1000" \
+${DEVSHELL_PROJECT_ID}:data_publisher_dataset.authorized_view
 
+# Step 3: Show Dataset Info
+echo "Showing Dataset Info for data_publisher_dataset"
+bq show --format=prettyjson $DEVSHELL_PROJECT_ID:data_publisher_dataset > temp_dataset.json
+
+# Step 4: Add View Access to Dataset
+echo "Adding View Access to Dataset"
+jq ".access += [{
+  \"view\": {
+    \"datasetId\": \"data_publisher_dataset\",
+    \"projectId\": \"${DEVSHELL_PROJECT_ID}\",
+    \"tableId\": \"authorized_view\"
+  }
+}]" temp_dataset.json > updated_dataset.json
+
+# Step 5: Update Dataset Permissions
+echo "Updating Dataset Permissions"
+bq update --source=updated_dataset.json $DEVSHELL_PROJECT_ID:data_publisher_dataset
+
+# Step 6: Create IAM Policy File
+echo "Creating IAM Policy File for authorized_view"
+cat <<EOF > policy.json
+{
+  "bindings": [
+    {
+      "members": [
+        "user:${TWIN_USER}"
+      ],
+      "role": "roles/bigquery.dataViewer"
+    }
+  ]
+}
+EOF
+
+# Step 7: Set IAM Policy on the View
+echo "Setting IAM Policy on authorized_view"
+bq set-iam-policy ${DEVSHELL_PROJECT_ID}:data_publisher_dataset.authorized_view policy.json
+
+# Step 8: Prompt to Login as Data Twin
+echo
+echo "Now, Login with Customer (Data Twin) Username"
 echo
 
 # Function to display a random congratulatory message
@@ -120,7 +78,6 @@ function random_congrats() {
         "Outstanding! Your dedication has brought you success!"
         "Great work! You’re one step closer to mastering this!"
         "Fantastic effort! You’ve earned this achievement!"
-        "Congratulations! Your persistence has paid off brilliantly!"
         "Bravo! You’ve completed the lab with flying colors!"
         "Excellent job! Your commitment is inspiring!"
         "You did it! Keep striving for more successes like this!"
@@ -177,24 +134,21 @@ function random_congrats() {
     )
 
     RANDOM_INDEX=$((RANDOM % ${#MESSAGES[@]}))
-    echo -e "${MESSAGES[$RANDOM_INDEX]}"
+    echo
+    echo "${MESSAGES[$RANDOM_INDEX]}"
 }
 
 # Display a random congratulatory message
 random_congrats
 
-echo -e "\n"  # Adding one blank line
+echo
 
 cd
 
 remove_files() {
-    # Loop through all files in the current directory
     for file in *; do
-        # Check if the file name starts with "gsp", "arc", or "shell"
         if [[ "$file" == gsp* || "$file" == arc* || "$file" == shell* ]]; then
-            # Check if it's a regular file (not a directory)
             if [[ -f "$file" ]]; then
-                # Remove the file and echo the file name
                 rm "$file"
                 echo "File removed: $file"
             fi
